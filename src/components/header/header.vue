@@ -17,8 +17,26 @@
 					<span class="text">{{seller.supports[0].description}}</span>
 				</div>
 			</div>
+			<div class="support-count" @click="showDetail">
+				<span v-if="seller.supports.length" class="count">{{seller.supports.length}}个</span>
+				<i class="ion icon-keyboard_arrow_right"></i>
+			</div>
 		</div>
-		<div class="bulletin-wrapper"></div>
+		<div class="bulletin-wrapper" @click="showDetail">
+			<span class="bulletin-title"></span><span class="bulletin-text">{{seller.bulletin}}</span>
+			<i class="ion icon-keyboard_arrow_right"></i>
+		</div>
+		<div class="background">
+			<img :src="seller.avatar" width="100%" height="100%">
+		</div>
+		<div v-show="detailShow" class="detail">
+			<div class="detail-wrapper clearfix">
+				<div class="detail-content"></div>
+			</div>
+			<div class="detail-close">
+				<i class="icon-close" @click="hideDetail"></i>
+			</div>
+		</div>
 	</div>
 </template>
 
@@ -32,6 +50,19 @@ export default {
 	},
 	created(){
 		this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
+	},
+	data(){
+		return {
+			detailShow: false
+		}
+	},
+	methods: {
+		showDetail() {
+			this.detailShow = true;
+		},
+		hideDetail() {
+			this.detailShow = false;
+		}
 	}
 }
 </script>
@@ -40,11 +71,14 @@ export default {
 	@import "../../common/stylus/mixin";
 
 	.header
+		position relative
 		color #fff
-		background #000
+		background rgba(7, 17, 27, 0.5)
+		overflow hidden
 		.content-wrapper
 			padding 24px 12px 18px 24px
 			font-size 0
+			position relative
 			.avatar
 				display inline-block
 				vertical-align top
@@ -94,4 +128,78 @@ export default {
 					.text
 						line-height 12px
 						font-size 12px
+			.support-count
+				position absolute
+				right 12px
+				bottom 14px
+				padding 7px 8px
+				height 12px
+				line-height 12px
+				border-radius 14px
+				background-color rgba(0, 0, 0, 0.2)
+				text-align center
+				.count
+					font-size 10px
+					color rgb(255, 255, 255)
+					margin-right 2px
+				.ion
+					font-size 10px
+					heigh 12px
+					line-height 12px
+		.bulletin-wrapper
+			height 28px
+			line-height 28px
+			padding 0 22px 0 12px
+			white-space nowrap
+			overflow hidden
+			text-overflow ellipsis
+			position relative
+			background rgba(7, 17, 27, 0.2)
+			.bulletin-title
+				vertical-align top
+				margin-top 8px
+				width 22px
+				height 12px
+				display inline-block
+				bg-img('bulletin')
+				background-size 22px 12px
+				background-repeat no-repeat
+			.bulletin-text
+				vertical-align top
+				margin 0 4px
+				font-size 10px
+			.ion
+				position absolute
+				top 8px
+				right 12px
+				font-size 10px
+		.background
+			position absolute
+			z-index -1
+			top 0
+			left 0
+			width 100%
+			height 100%
+			filter blur(10px)
+		.detail
+			position fixed
+			top 0
+			left 0
+			z-index 100
+			width 100%
+			height 100%
+			overflow auto
+			background rgba(7, 17, 27, 0.8)
+			.detail-wrapper
+				min-height 100%
+				height auto
+				.detail-content
+					margin-top 64px
+					padding-bottom 64px
+			.detail-close
+				text-align center
+				position relative
+				margin -64px auto 0 auto
+				width 32px
+				height 32px
 </style>	
