@@ -18,7 +18,7 @@
 				</div>
 			</div>
 			<div class="support-count" @click="showDetail">
-				<span v-if="seller.supports.length" class="count">{{seller.supports.length}}个</span>
+				<span v-if="seller.supports" class="count">{{seller.supports.length}}个</span>
 				<i class="ion icon-keyboard_arrow_right"></i>
 			</div>
 		</div>
@@ -31,7 +31,17 @@
 		</div>
 		<div v-show="detailShow" class="detail">
 			<div class="detail-wrapper clearfix">
-				<div class="detail-content"></div>
+				<div class="detail-content">
+					<h1 class="name">{{seller.name}}</h1>
+					<div class="star-wrapper">
+						<v-star :size="48" :score="seller.score"></v-star>
+					</div>
+					<div class="title">
+						<div class="line"></div>
+						<div class="text">优惠信息</div>
+						<div class="line"></div>
+					</div>
+				</div>
 			</div>
 			<div class="detail-close">
 				<i class="icon-close" @click="hideDetail"></i>
@@ -41,30 +51,34 @@
 </template>
 
 <script>
-export default {
-	name: 'v-header',
-	props: {
-		seller: {
-			type: Object
-		}
-	},
-	created(){
-		this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
-	},
-	data(){
-		return {
-			detailShow: false
-		}
-	},
-	methods: {
-		showDetail() {
-			this.detailShow = true;
+	import star from '../../components/star/star'
+	export default {
+		name: 'v-header',
+		props: {
+			seller: {
+				type: Object
+			}
 		},
-		hideDetail() {
-			this.detailShow = false;
+		created(){
+			this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
+		},
+		data(){
+			return {
+				detailShow: false
+			}
+		},
+		methods: {
+			showDetail() {
+				this.detailShow = true;
+			},
+			hideDetail() {
+				this.detailShow = false;
+			}
+		},
+		components: {
+			"v-star": star
 		}
 	}
-}
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
@@ -193,9 +207,27 @@ export default {
 			.detail-wrapper
 				min-height 100%
 				height auto
+				width 100%
 				.detail-content
 					margin-top 64px
 					padding-bottom 64px
+					.name
+						line-height 16px
+						text-align center
+						font-weight 700
+						font-size 16px
+					.star-wrapper
+						margin-top 18px
+						text-align center
+						padding 2px 0
+					.title
+						display flex
+						width 80%
+						margin 30px auto 24px auto 
+						.line
+							flex 1
+							margin-bottom: 8px;
+							border-bottom 1px solid rgba(255, 255, 255, 0.2)
 			.detail-close
 				text-align center
 				position relative
