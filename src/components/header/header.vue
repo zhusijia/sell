@@ -29,24 +29,40 @@
 		<div class="background">
 			<img :src="seller.avatar" width="100%" height="100%">
 		</div>
-		<div v-show="detailShow" class="detail">
-			<div class="detail-wrapper clearfix">
-				<div class="detail-content">
-					<h1 class="name">{{seller.name}}</h1>
-					<div class="star-wrapper">
-						<v-star :size="48" :score="seller.score"></v-star>
-					</div>
-					<div class="title">
-						<div class="line"></div>
-						<div class="text">优惠信息</div>
-						<div class="line"></div>
+		<transition name="fade">
+			<div v-show="detailShow" class="detail">
+				<div class="detail-wrapper clearfix">
+					<div class="detail-content">
+						<h1 class="name">{{seller.name}}</h1>
+						<div class="star-wrapper">
+							<v-star :size="48" :score="seller.score"></v-star>
+						</div>
+						<div class="title">
+							<div class="line"></div>
+							<div class="text">优惠信息</div>
+							<div class="line"></div>
+						</div>
+						<ul v-if="seller.supports" class="supports">
+							<li class="support-item" v-for="item in seller.supports">
+								<span class="icon" :class="classMap[item.type]"></span>
+								<span class="description">{{item.description}}</span>
+							</li>
+						</ul>
+						<div class="title">
+							<div class="line"></div>
+							<div class="text">商家公告</div>
+							<div class="line"></div>
+						</div>
+						<div class="bulletin-container">
+							<p class="bulletin">{{seller.bulletin}}</p>
+						</div>
 					</div>
 				</div>
+				<div class="detail-close">
+					<i class="icon-close" @click="hideDetail"></i>
+				</div>
 			</div>
-			<div class="detail-close">
-				<i class="icon-close" @click="hideDetail"></i>
-			</div>
-		</div>
+		</transition>
 	</div>
 </template>
 
@@ -204,6 +220,14 @@
 			height 100%
 			overflow auto
 			background rgba(7, 17, 27, 0.8)
+			opacity 1
+			backdrop-filter: blur(10px)
+			// 定义进入的开始状态和离开的结束状态
+			&.fade-enter, &.fade-leave-to
+				opacity 0
+			// 定义过度的状态
+			&.fade-enter-active, &.fade-leave-active
+				transition all 0.5s ease-in
 			.detail-wrapper
 				min-height 100%
 				height auto
@@ -226,8 +250,49 @@
 						margin 30px auto 24px auto 
 						.line
 							flex 1
-							margin-bottom: 8px;
+							margin-bottom 8px;
 							border-bottom 1px solid rgba(255, 255, 255, 0.2)
+						.text
+							font-weight 700
+							margin 0 12px
+					.supports
+						margin 0 auto 0 auto
+						width 80%
+						.support-item
+							margin 0 12px 12px 12px
+							&:last-child
+								margin-bottom 0
+							.icon
+								display inline-block
+								height 16px
+								width 16px
+								background-repeat no-repeat
+								background-size 16px 16px
+								vertical-align middle
+								margin-right 6px
+								&.decrease
+									bg-img('decrease_1')
+								&.discount	
+									bg-img('discount_1')
+								&.guarantee
+									bg-img('guarantee_1')
+								&.invoice
+									bg-img('invoice_1')
+								&.special
+									bg-img('special_1')	
+							.description
+								font-size 12px
+								line-height 12px
+								color rgb(255, 255, 255)
+					.bulletin-container
+						width 80%
+						margin 0 auto
+						.bulletin
+							padding 0 12px
+							font-size 12px
+							font-weight 200
+							line-height 24px
+							color rgb(255, 255, 255)	
 			.detail-close
 				text-align center
 				position relative
