@@ -2,7 +2,7 @@
   <div class="goods">
 		<div class="menu-wrapper" ref="menuWrapper">
 			<ul>
-				<li v-for="(item,index) in goods" class="menu-item" :class="{'current':currentIndex===index}">
+				<li v-for="(item,index) in goods" class="menu-item" :class="{'current':currentIndex===index}" @click="selectMenu(index, $event)">
 					<span class="text border-1px">
 						<span v-if="item.type>0" class="icon" :class="classMap[item.type]"></span>{{item.name}}
 					</span>
@@ -37,15 +37,20 @@
 				</div>
 			</div>
 		</div>
+		<shopCarts></shopCarts>
   </div>
 </template>
 
 <script>
 	import BScroll from 'better-scroll';
+	import shopCarts from "../../components/shopcarts/shopcarts"
 
 	const ERR_OK = 0;
 	export default {
 		name: 'v-goods',
+		components: {
+			shopCarts: shopCarts
+		},
 		props: {
 			seller: {
 				type: Object
@@ -55,8 +60,7 @@
 			return {
 				goods: {},
 				listHeight: [],
-				scrollY: 0,
-				cIndex: 0
+				scrollY: 0
 			}
 		},
 		created() {
@@ -85,8 +89,15 @@
       }
 		},
 		methods: {
+			selectMenu(index, event) {
+				let goodsList = this.$refs.goodsWrapper.getElementsByClassName("food-list-hook");
+				let el = goodsList[index];
+				this.goodsScroll.scrollToElement(el, 300);
+			},
 			_initScroll() {
-				this.menuScroll = new BScroll(this.$refs.menuWrapper, {})
+				this.menuScroll = new BScroll(this.$refs.menuWrapper, {
+					click: true
+				})
 				this.goodsScroll = new BScroll(this.$refs.goodsWrapper, {
 					probeType: 3
 				});
