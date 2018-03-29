@@ -39,7 +39,7 @@ export default {
 		selectFoods :{
 			type: Array,
 			default() {
-				return [{price: 10}, {price: 20}];
+				return [{price: 10, count: 2}, {price: 20, count: 3}];
 			}
 		},
 		deliveryPrice: {
@@ -54,8 +54,8 @@ export default {
 	computed: {
 		totalPrice() {
 			let total = 0;
-			_.each(this.selectFoods, obj => {
-					total += obj.price;
+			_.each(this.selectFoods, (food) => {
+					total += food.price * food.count;
 			})
 			console.log(total);
 			return total;
