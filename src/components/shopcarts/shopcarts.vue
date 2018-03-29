@@ -7,21 +7,59 @@
 						<span class="ion icon-shopping_cart"></span>
 					</div>
 				</div>
-				<div class="price">¥0</div>
-				<div class="desc">另需配送费¥0元	</div>
+				<div class="price">¥{{totalPrice}}</div>
+				<div class="desc">另需配送费¥{{deliveryPrice}}元	</div>
 			</div>
-			<div class="content-right">¥0元起送</div>
+			<div class="content-right">
+				<div class="pay">
+					¥{{minPrice}}元起送
+				</div>
+			</div>
 		</div>
 	</div>
 </template>
 <script>
+const ERR_OK = 0;
 export default {
 	name: "shopCarts",
-	created () {
-
+	data() {
+		return {
+			seller: {}
+		}
+	},
+	created() {
+		this.$http.get("/api/seller").then(response => {
+			response = response.body
+			if (response.errno === ERR_OK) {
+				this.seller = response.data;
+			}
+		})
+	},
+	props: {
+		selectFoods :{
+			type: Array,
+			default() {
+				return [{price: 10}, {price: 20}];
+			}
+		},
+		deliveryPrice: {
+			type: Number,
+			default: 0
+		},
+		minPrice: {
+			type: Number,
+			default: 0
+		},
 	},
 	computed: {
-
+		totalPrice() {
+			let total = 0;
+			_.each(this.selectFoods, obj => {
+					total += obj.price;
+			})
+			console.log(total);
+			return total;
+		}
 	},
 	method: {
 
@@ -86,11 +124,13 @@ export default {
 					line-height 24px
 			.content-right
 				flex 0 0 105px
+				background #2b343c
 				box-sizing border-box
 				width 105px
 				color rgba(255, 255, 255, 0.4)
 				font-size 12px
 				font-weight 700
 				line-height 46px
+				text-align center
 
 </style>
