@@ -14,10 +14,13 @@
 				<div class="desc">另需配送费¥{{deliveryPrice}}元	</div>
 			</div>
 			<div class="content-right">
-				<div class="pay" :class="{'high-light': totalPrice >= minPrice}">
+				<!-- <div class="pay" :class="{'high-light': totalPrice >= minPrice}">
 					<span v-if="totalPrice === 0">¥{{minPrice}}元起送</span>
 					<span v-if="deliverPrice > 0">还差¥{{deliverPrice}}起送</span>
 					<span v-else>去结算</span>
+				</div> -->
+				<div class="pay" :class="{'high-light': totalPrice >= minPrice}">
+					{{payDesc}}
 				</div>
 			</div>
 		</div>
@@ -44,7 +47,7 @@ export default {
     selectFoods: {
       type: Array,
       default() {
-        return [{ price: 20, count: 1 }];
+        return [];
       }
     },
     deliveryPrice: {
@@ -74,6 +77,16 @@ export default {
 		deliverPrice() {
 			let deliverPrice = this.seller.minPrice - this.totalPrice;
 			return deliverPrice;
+		},
+		payDesc() {
+			let deliverPrice = this.seller.minPrice - this.totalPrice
+			if (this.totalPrice == 0) {
+				return `¥${this.minPrice}元起送`
+			} else if (deliverPrice > 0) {
+				return `还差¥${deliverPrice}元起送`
+			} else {
+				return `去结算`
+			}
 		}
   },
   methods: {}
