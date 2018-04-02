@@ -23,6 +23,15 @@
 					{{payDesc}}
 				</div>
 			</div>
+			<div class="ball-container">
+				<div v-for="ball in balls">=
+					<transition name="drop" @before-enter="beforeEnter">
+						<div v-show="ball.show" class="ball">
+							<div class="inner"></div>
+						</div>
+					</transition>
+				</div>
+			</div>	
 		</div>
 	</div>
 </template>
@@ -32,7 +41,25 @@ export default {
   name: "shopCarts",
   data() {
     return {
-      seller: {}
+      seller: {},
+      balls: [
+        {
+          show: false
+        },
+        {
+          show: false
+        },
+        {
+          show: false
+        },
+        {
+          show: false
+        },
+        {
+          show: false
+        }
+      ],
+      dropBalls: []
     };
   },
   created() {
@@ -73,23 +100,38 @@ export default {
         total += food.count;
       });
       return total;
-		},
-		deliverPrice() {
-			let deliverPrice = this.seller.minPrice - this.totalPrice;
-			return deliverPrice;
-		},
-		payDesc() {
-			let deliverPrice = this.seller.minPrice - this.totalPrice
-			if (this.totalPrice == 0) {
-				return `¥${this.minPrice}元起送`
-			} else if (deliverPrice > 0) {
-				return `还差¥${deliverPrice}元起送`
-			} else {
-				return `去结算`
-			}
-		}
+    },
+    deliverPrice() {
+      let deliverPrice = this.seller.minPrice - this.totalPrice;
+      return deliverPrice;
+    },
+    payDesc() {
+      let deliverPrice = this.seller.minPrice - this.totalPrice;
+      if (this.totalPrice == 0) {
+        return `¥${this.minPrice}元起送`;
+      } else if (deliverPrice > 0) {
+        return `还差¥${deliverPrice}元起送`;
+      } else {
+        return `去结算`;
+      }
+    }
   },
-  methods: {}
+  methods: {
+    drop(el) {
+      for (let i = 0; i < this.balls.length; i++) {
+        let ball = this.balls[i];
+        if (!ball.show) {
+          ball.show = true;
+          ball.el = el;
+          this.dropBalls.push(ball);
+          return;
+        }
+      }
+		},
+		beforeEnter(el) {
+			console.log(el);
+		}
+  }
 };
 </script>
 <style lang="stylus" scoped>
@@ -209,6 +251,24 @@ export default {
 			.pay.high-light {
 				background: #00cc33;
 				color: #fff;
+			}
+		}
+
+		.ball-container {
+			.ball {
+				position: fixed;
+				left: 32px;
+				bottom: 22px;
+				z-index: 200;
+				transition: all 0.4s;
+
+				.inner {
+					width: 16px;
+					height: 16px;
+					border-radius: 50%;
+					background: rgb(0, 160, 220);
+					transition: all 0.4s;
+				}
 			}
 		}
 	}

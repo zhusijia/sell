@@ -1,12 +1,13 @@
 <template>
 	<div class="cart-control">
-		<transition name="transition">
-			<div class="">
-				<div class="cart-decrease icon-remove_circle_outline" v-show="food.count > 0" @click="decreaseCart"></div>
-			<div class="cart-count" v-show="food.count > 0">{{food.count}}</div>
+		<transition name="translate">
+			<div class="decrease-container" v-show="food.count > 0">
+				<div class="cart-decrease" @click="decreaseCart">
+					<div class="inner icon-remove_circle_outline"></div>
+				</div>
+				<div class="cart-count">{{food.count}}</div>
 			</div>
 		</transition>
-		<!-- <div class="cart-decrease icon-remove_circle_outline" v-show="food.count > 0" @click="decreaseCart"></div>
 		<div class="cart-count" v-show="food.count > 0">{{food.count}}</div> -->
 		<div class="cart-cart-add icon-add_circle" @click="addCart"></div>
 	</div>
@@ -28,6 +29,7 @@ export default {
       } else {
         this.food.count++;
       }
+			this.$emit('cart-add', event.target)
     },
     decreaseCart() {
       if (!this.food.count) {
@@ -35,7 +37,7 @@ export default {
       } else {
         this.food.count--;
       }
-    }
+    },
   }
 };
 </script>
@@ -48,21 +50,50 @@ export default {
 	display: flex;
 	align-items: center;
 
-	.cart-decrease {
-		display: inline-block;
-		padding: 6px;
-		font-size: 24px;
-		line-height: 24px;
-		color: rgb(0, 160, 220);
-	}
+	.decrease-container {
+		display: flex;
+		align-items: center;
+		opacity: 1;
+		transform: translate3d(0, 0, 0);
 
-	.cart-count {
-		display: inline-block;
-		font-size: 10px;
-		color: rgb(147, 153, 159);
-		line-height: 24px;
-		width: 24px;
-		text-align: center;
+		.inner {
+			display: inline-block;
+			transform: rotate(0);
+		}
+
+		&.translate-enter, &.translate-leave-to {
+			transform: translate3d(36px, 0, 0);
+			opacity: 0;
+
+			.inner {
+				transform: rotate(180deg);
+			}
+		}
+
+		&.translate-enter-active, &.translate-leave-active {
+			transition: all 0.2s linear;
+
+			.inner {
+				transition: all 0.2s linear;
+			}
+		}
+
+		.cart-decrease {
+			display: inline-block;
+			padding: 6px;
+			font-size: 24px;
+			line-height: 24px;
+			color: rgb(0, 160, 220);
+		}
+
+		.cart-count {
+			display: inline-block;
+			font-size: 10px;
+			color: rgb(147, 153, 159);
+			line-height: 24px;
+			width: 24px;
+			text-align: center;
+		}
 	}
 
 	.cart-cart-add {
