@@ -25,9 +25,9 @@
 			</div>
 			<div class="ball-container">
 				<div v-for="ball in balls">=
-					<transition name="drop" @before-enter="beforeEnter">
+					<transition name="drop" @before-enter="beforeDrop" @enter="dropping" @after-enter="afterDrop">
 						<div v-show="ball.show" class="ball">
-							<div class="inner"></div>
+							<div class="inner inner-hook"></div>
 						</div>
 					</transition>
 				</div>
@@ -127,10 +127,38 @@ export default {
           return;
         }
       }
-		},
-		beforeEnter(el) {
-			console.log(el);
-		}
+    },
+    beforeDrop(el) {
+      // 优化原先算法
+      let ball = this.dropBalls[0];
+      let rect = ball.el.getBoundingClientRect();
+      let x = rect.left - 32 + 10;
+      let y = -(window.innerHeight - rect.top - 22 - 24);
+      el.style.webkitTransform = `translate3d(0, ${y}px, 0)`;
+      el.style.transfrom = `translate3d(0, ${y}px, 0)`;
+      let inner = el.getElementsByClassName("inner-hook")[0];
+      inner.style.webkitTransform = `translate3d(${x}px, 0, 0)`;
+      inner.style.transfrom = `translate3d(${x}px, 0, 0)`;
+    },
+    dropping(el, done) {
+      // 触发浏览器重绘，避免样式合并
+      let rf = el.offsetHeight;
+      this.$nextTick(() => {
+        el.style.webkitTransform = "translate3d(0,0,0)";
+        el.style.transform = "translate3d(0,0,0)";
+        let inner = el.getElementsByClassName("inner-hook")[0];
+        inner.style.webkitTransform = "translate3d(0,0,0)";
+        inner.style.transform = "translate3d(0,0,0)";
+        el.addEventListener("transitionend", done);
+      });
+    },
+    afterDrop(el) {
+      let ball = this.dropBalls.shift();
+      if (ball) {
+        ball.show = false;
+        el.style.display = "none";
+      }
+    }
   }
 };
 </script>
@@ -255,19 +283,20 @@ export default {
 		}
 
 		.ball-container {
+			// 一个div负责横向移动，一个div负责纵向移动，配合transition-timing-function可以实现贝塞尔曲线的运动轨迹
 			.ball {
 				position: fixed;
 				left: 32px;
 				bottom: 22px;
 				z-index: 200;
-				transition: all 0.4s;
+				transition: all 0.4s cubic-bezier(0.49, -0.29, 0.75, 0.41);
 
 				.inner {
 					width: 16px;
 					height: 16px;
 					border-radius: 50%;
 					background: rgb(0, 160, 220);
-					transition: all 0.4s;
+					transition: all 0.4s linear;
 				}
 			}
 		}
