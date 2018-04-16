@@ -138,9 +138,10 @@ export default {
       console.log("this.listHeight", this.listHeight);
 		},
 		cartAdd(target) {
-			this.$refs.shopCarts.drop(target);
-			// console.log(target);
-		}
+			this.$nextTick(()=>{
+				this.$refs.shopCarts.drop(target);
+			})
+		},
   }
 };
 </script>

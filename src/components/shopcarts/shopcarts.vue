@@ -24,21 +24,49 @@
 				</div>
 			</div>
 			<div class="ball-container">
-				<div v-for="ball in balls">=
+				<div v-for="ball in balls">
 					<transition name="drop" @before-enter="beforeDrop" @enter="dropping" @after-enter="afterDrop">
 						<div v-show="ball.show" class="ball">
 							<div class="inner inner-hook"></div>
 						</div>
 					</transition>
 				</div>
-			</div>	
+			</div>
+			<div class="shopcart-list">
+				<div class="list-header">
+					<h1 class="title">购物车</h1>
+					<span class="empty" @click="emptyFoods">清空</span>
+				</div>
+				<div class="list-content">
+					<ul>
+						<li class="food" v-for="food in mySelectFoods">
+							<span class="name">{{food.name}}</span>
+							<div class="price">
+								<span>¥{{food.price*food.count}}</span>
+							</div>
+							<div class="cart-control">
+								<cartControl :food=food @cart-add="drop"></cartControl>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</div>
 		</div>
 	</div>
 </template>
 <script>
+import cartControl from "../../components/cartcontrol/cartcontrol";
 const ERR_OK = 0;
 export default {
   name: "shopCarts",
+  components: {
+    cartControl: cartControl
+  },
+	watch: {
+		selectFoods(newValue, oldValue) {
+			this.mySelectFoods = newValue;
+		}
+	},
   data() {
     return {
       seller: {},
@@ -59,7 +87,8 @@ export default {
           show: false
         }
       ],
-      dropBalls: []
+      dropBalls: [],
+			mySelectFoods: this.selectFoods
     };
   },
   created() {
@@ -117,6 +146,11 @@ export default {
     }
   },
   methods: {
+		emptyFoods(){
+			this.selectFoods.forEach((food) => {
+				food.count = 0;
+			})
+		},
     drop(el) {
       for (let i = 0; i < this.balls.length; i++) {
         let ball = this.balls[i];
@@ -163,6 +197,8 @@ export default {
 };
 </script>
 <style lang="stylus" scoped>
+@import '../../common/stylus/mixin';
+
 .shop-cart {
 	position: fixed;
 	bottom: 0;
@@ -191,6 +227,7 @@ export default {
 				width: 56px;
 				border-radius: 50%;
 				background: #141d27;
+				z-index: 100;
 
 				.logo {
 					width: 100%;
@@ -297,6 +334,76 @@ export default {
 					border-radius: 50%;
 					background: rgb(0, 160, 220);
 					transition: all 0.4s linear;
+				}
+			}
+		}
+
+		.shopcart-list {
+			position: fixed;
+			width: 100%;
+			height: 400px;
+			bottom: 46px;
+			background: #fff;
+
+			.list-header {
+				height: 40px;
+				padding: 0 18px;
+				background: #f3f5f7;
+				display: flex;
+				align-items: baseline;
+				justify-content: space-between;
+				border-bottom: 2px solid rgba(7, 17, 27, 0.1);
+				box-sizing: border-box;
+
+				.title {
+					display: inline-block;
+					font-size: 14px;
+					font-weight: 200;
+					line-height: 40px;
+					color: rgb(7, 17, 27);
+				}
+
+				.empty {
+					font-size: 12px;
+					line-height: 40px;
+					color: rgb(0, 160, 220);
+				}
+			}
+
+			.list-content {
+				.food {
+					height: 48px;
+					padding: 12px 18px;
+					line-height: 48px;
+					border-1px(rgba(7, 17, 27, 0.1));
+
+					&:after {
+						left: 18px;
+						right: 18px;
+						width: auto;
+					}
+
+					.name {
+						font-size: 14px;
+						color: rgb(7, 17, 27);
+						line-height: 24px;
+					}
+
+					.price {
+						display: inline-block;
+
+						span {
+							display: inline-block;
+							font-size: 14px;
+							font-weight: 700;
+							color: rgb(240, 20, 20);
+							line-height: 24px;
+						}
+					}
+
+					.cart-control {
+						float: right;
+					}
 				}
 			}
 		}
