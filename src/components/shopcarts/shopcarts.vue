@@ -2,7 +2,7 @@
 	<div class="shop-cart">
 		<div class="content">
 			<div class="content-left">
-				<div class="logo-wrapper">
+				<div class="logo-wrapper" @click="toggleList">
 					<div class="logo" :class="{'high-light': totalCount}">
 						<span class="ion icon-shopping_cart"></span>
 					</div>
@@ -32,41 +32,45 @@
 					</transition>
 				</div>
 			</div>
-			<div class="shopcart-list">
-				<div class="list-header">
-					<h1 class="title">购物车</h1>
-					<span class="empty" @click="emptyFoods">清空</span>
+			<transition name="translate">
+				<div class="shopcart-list" v-show="listShow">
+					<div class="list-header">
+						<h1 class="title">购物车</h1>
+						<span class="empty" @click="emptyFoods">清空</span>
+					</div>
+					<div class="list-content" ref="listContent">
+						<ul>
+							<li class="food" v-for="food in mySelectFoods">
+								<span class="name">{{food.name}}</span>
+								<div class="price">
+									<span>¥{{food.price*food.count}}</span>
+								</div>
+								<div class="cart-control">
+									<cartControl :food=food @cart-add="drop"></cartControl>
+								</div>
+							</li>
+						</ul>
+					</div>
 				</div>
-				<div class="list-content">
-					<ul>
-						<li class="food" v-for="food in mySelectFoods">
-							<span class="name">{{food.name}}</span>
-							<div class="price">
-								<span>¥{{food.price*food.count}}</span>
-							</div>
-							<div class="cart-control">
-								<cartControl :food=food @cart-add="drop"></cartControl>
-							</div>
-						</li>
-					</ul>
-				</div>
-			</div>
+			</transition>
 		</div>
 	</div>
 </template>
 <script>
 import cartControl from "../../components/cartcontrol/cartcontrol";
+import BScroll from "better-scroll";
+
 const ERR_OK = 0;
 export default {
   name: "shopCarts",
   components: {
     cartControl: cartControl
   },
-	watch: {
-		selectFoods(newValue, oldValue) {
-			this.mySelectFoods = newValue;
-		}
-	},
+  watch: {
+    selectFoods(newValue, oldValue) {
+      this.mySelectFoods = newValue;
+    }
+  },
   data() {
     return {
       seller: {},
@@ -88,7 +92,8 @@ export default {
         }
       ],
       dropBalls: [],
-			mySelectFoods: this.selectFoods
+      mySelectFoods: this.selectFoods,
+      fold: true
     };
   },
   created() {
@@ -96,6 +101,9 @@ export default {
       response = response.body;
       if (response.errno === ERR_OK) {
         this.seller = response.data;
+        this.$nextTick(() => {
+          this._initScroll();
+        });
       }
     });
   },
@@ -143,14 +151,37 @@ export default {
       } else {
         return `去结算`;
       }
+    },
+    listShow() {
+      console.log("this.totalCount", this.totalCount);
+      if (!this.totalCount) {
+        this.fold = true;
+        return false;
+      }
+      let show = !this.fold;
+      return show;
     }
   },
   methods: {
-		emptyFoods(){
-			this.selectFoods.forEach((food) => {
-				food.count = 0;
-			})
-		},
+    toggleList() {
+      if (!this.totalCount) {
+        return;
+      }
+      this.fold = !this.fold;
+    },
+    _initScroll() {
+      this.listScroll = new BScroll(this.$refs.listContent, {
+        click: true
+      });
+    },
+    emptyFoods() {
+      this.selectFoods.forEach(food => {
+        food.count = 0;
+      });
+    },
+    addFood(target) {
+      this.drop(target);
+    },
     drop(el) {
       for (let i = 0; i < this.balls.length; i++) {
         let ball = this.balls[i];
@@ -341,9 +372,23 @@ export default {
 		.shopcart-list {
 			position: fixed;
 			width: 100%;
-			height: 400px;
+			height: auto;
+			max-height: 219.5px;
 			bottom: 46px;
 			background: #fff;
+			overflow: hidden;
+			transform: translate3d(0, 0, 0);
+			z-index: -1;
+			opacity: 1;
+
+			&.translate-enter, &.translate-leave-to {
+				transform: translate3d(0, 100%, 0);
+				opacity: 0;
+			}
+
+			&.translate-enter-active, &.translate-leave-active {
+				transition: all 0.4s ease;
+			}
 
 			.list-header {
 				height: 40px;
