@@ -160,11 +160,15 @@ export default {
       }
       let show = !this.fold;
       if (show) {
-        this.$nextTick(() => {
-          this.scroll = new BScroll(this.$refs.listContent, {
-            click: true
-          });
-        });
+				if (!this.scroll) {
+					this.$nextTick(() => {
+						this.scroll = new BScroll(this.$refs.listContent, {
+							click: true
+						});
+					});
+				} else {
+					this.scroll.refresh();
+				}
       }
       return show;
     }
@@ -243,7 +247,7 @@ export default {
 	height: 46px;
 	width: 100%;
 	background: #000;
-	z-index: 10;
+	z-index: 31;
 
 	.content {
 		display: flex;

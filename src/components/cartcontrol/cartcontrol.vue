@@ -24,6 +24,7 @@ export default {
   },
   methods: {
     addCart() {
+			event.stopPropagation()
       if (!this.food.count) {
         Vue.set(this.food, "count", 1);
       } else {
