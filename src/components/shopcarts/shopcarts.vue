@@ -101,9 +101,9 @@ export default {
       response = response.body;
       if (response.errno === ERR_OK) {
         this.seller = response.data;
-        this.$nextTick(() => {
-          this._initScroll();
-        });
+        // this.$nextTick(() => {
+        //   this._initScroll();
+        // });
       }
     });
   },
@@ -159,6 +159,13 @@ export default {
         return false;
       }
       let show = !this.fold;
+      if (show) {
+        this.$nextTick(() => {
+          this.scroll = new BScroll(this.$refs.listContent, {
+            click: true
+          });
+        });
+      }
       return show;
     }
   },
@@ -416,6 +423,9 @@ export default {
 			}
 
 			.list-content {
+				max-height: 179.5px;
+				overflow: hidden;
+
 				.food {
 					height: 48px;
 					padding: 12px 18px;
