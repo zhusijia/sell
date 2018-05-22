@@ -41,7 +41,7 @@
 			</div>
 		</div>
 		<shopCarts ref="shopCarts" :deliveryPrice="seller.deliveryPrice" :minPrice="seller.minPrice" :selectFoods="selectFoods"></shopCarts>
-		<food :food="selectedFood" ref="food"></food>
+		<food :food="selectedFood" ref="food" @cart-add="cartAdd"></food>
 	</div>	
 </template>
 
@@ -146,6 +146,7 @@ export default {
       console.log("this.listHeight", this.listHeight);
 		},
 		cartAdd(target) {
+			console.log(target)
 			this.$nextTick(()=>{
 				this.$refs.shopCarts.drop(target);
 			})

@@ -9,6 +9,17 @@ border-1px($color)
 		bottom 0px
 		border-top 1px solid $color
 
+border-top-1px($color)
+	position relative
+	&:before
+		content ' '
+		display block
+		position absolute
+		width 100%
+		left 0px
+		top 0px
+		border-top 1px solid $color
+
 border-none()
 	&:after
 		display none
